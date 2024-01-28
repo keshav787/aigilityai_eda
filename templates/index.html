@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDA Application</title>
+    <style>
+        body { background-color: #FFFFFF; color: #000000; font-family: Arial, sans-serif; text-align: center; }
+        .header { margin-top: 20px; }
+        .app-name { font-size: 24px; margin-top: 10px; }
+        .upload-box { background-color: white; border: 2px solid #d3d3d3; border-radius: 8px; padding: 20px; display: inline-block; margin: 20px 0; }
+        .upload-btn { background-color: #4CAF50; color: BUTTON_#000000; padding: 10px 20px; margin: 10px 0; border: none; border-radius: 4px; cursor: pointer; }
+        .upload-btn:hover { background-color: #45a049; color: BUTTON_HOVER_#000000; }
+        .footer { text-align: center; padding: 20px; background-color: #f2f2f2; color: #000000; font-size: 0.8em; position: fixed; left: 0; bottom: 0; width: 100%; border-top: 1px solid #d3d3d3; }
+        .footer p { margin: 0; line-height: 1.6; }
+          .output-div {
+         display: none; 
+        border: 2px solid #000;
+        max-width: 40%;
+        padding: 10px; 
+        margin: 0 auto; 
+        overflow: auto;
+    }
+        .report-title { font-size: 28px; margin-bottom: 20px; }
+        .report-content { text-align: left; display: inline-block; text-align: left; width: 100%; }
+        .report-image { width: 100%; height: auto; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <img src="./static/Website_Agility Logo 4.jpg" alt="Logo">
+    <div class="app-name">EDA Application</div>
+</div>
+
+<div class="upload-box">
+    <input type="file" id="fileInput" name="file"><br><br>
+    <input type="button" value="Upload" class="upload-btn" onclick="submitFile()">
+</div>
+
+<div id="results" class="output-div">
+    <!-- Dynamic content will be displayed here -->
+</div>
+
+<div class="footer">
+    <p>&copy; 2024 Aigility AI's Autonomous Agents</p>
+</div>
+
+<script>
+ function submitFile() {
+        var formData = new FormData();
+        var fileInput = document.getElementById('fileInput');
+        formData.append('file', fileInput.files[0]);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload', true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                displayResults(response);
+            } else {
+                document.getElementById('results').innerHTML = '<p>Error uploading file.</p>';
+            }
+        };
+        xhr.send(formData);
+    }
+
+    function displayResults(data) {
+    console.log("Received data is displayResults", data)
+    var resultsDiv = document.getElementById('results');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<div class="report-title">' + data.Title + '</div>';
+
+    for (var key in data) {
+        if (data.hasOwnProperty(key) && key !== 'Title') {
+            var value = data[key];
+            var content = '';
+            if (typeof value === 'string' && isImageUrl(value)) {
+                content = '<h3>' + key + '</h3><img src="' + value + '" class="report-image">';
+                content = '<h3>' + key + '</h3><img src="' + value + '" class="report-image" width="400px" height="your_height_here">';
+
+                
+            } else {
+                content = '<p><strong>' + key + ':</strong> ' + value + '</p>';
+                // typeContent(resultsDiv, content);
+            }
+            resultsDiv.innerHTML += content
+            
+        }
+    }
+}
+
+function isImageUrl(url) {
+    console.log("Received URL is", url);
+    return typeof url === 'string' && url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+}
+
+
+    function typeContent(container, content) {
+    console.log("Received content in typecontent", content)
+        var typingSpeed = 1000; // milliseconds
+        var i = 0;
+        var interval = setInterval(function() {
+            if (i < content.length) {
+                container.innerHTML += content.charAt(i);
+                i++;
+            } else {
+                clearInterval(interval);
+            }
+        }, typingSpeed);
+    }
+
+</script>
+
+</body>
+</html>
+
